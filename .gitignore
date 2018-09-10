@@ -1,2 +1,8 @@
 # Artifacts
 .DS_Store
+
+# Env
+venv/
+
+# Editor
+.vscode/
