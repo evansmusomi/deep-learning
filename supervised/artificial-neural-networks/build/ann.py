@@ -37,28 +37,76 @@ import keras
 from keras.models import Sequential
 from keras.layers import Dense
 
-# initialize the ANN
-classifier = Sequential()
 
-# add the input layer, the hidden layers and output layer
-classifier.add(Dense(activation="relu", input_dim=11,
-                     units=6, kernel_initializer="uniform"))
-classifier.add(Dense(activation="relu", units=6, kernel_initializer="uniform"))
-classifier.add(Dense(activation="sigmoid", units=1,
-                     kernel_initializer="uniform"))
+def build_classifier():
+    # construct the ANN
+    classifier = Sequential()
+    # add the input layer, the hidden layers and output layer
+    classifier.add(Dense(activation="relu", input_dim=11,
+                         units=6, kernel_initializer="uniform"))
+    classifier.add(Dense(activation="relu", units=6,
+                         kernel_initializer="uniform"))
+    classifier.add(Dense(activation="sigmoid", units=1,
+                         kernel_initializer="uniform"))
+    # compile the ANN
+    classifier.compile(
+        optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+    return classifier
 
-# compile the ANN
-classifier.compile(
-    optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
 
-# fit the ANN to the training set
-classifier.fit(X_train, y_train, batch_size=10, epochs=100)
-
-# predict the test set results
-y_pred = classifier.predict(X_test)
-y_pred = (y_pred > 0.5)
-
-# make the confusion matrix
 from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(y_test, y_pred)
-print(cm)
+
+
+def train_and_predict():
+    classifier = build_classifier()
+    # fit the ANN to the training set
+    classifier.fit(X_train, y_train, batch_size=10, epochs=100)
+    # predict the test set results
+    y_pred = classifier.predict(X_test)
+    y_pred = (y_pred > 0.5)
+
+    # make the confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    print(cm)
+
+
+# predict a single observation
+""" will the following customer leave the bank?
+Geography: France
+Credit score: 600
+Gender: Male
+Age: 40
+Tenure: 3
+Balance: 60000
+Number of Products: 2
+Has Credit Card: Yes
+Is Active Member: Yes
+Estimated Salary: 50000
+"""
+
+
+def predict_observation(classifier):
+    new_prediction = classifier.predict(sc_X.transform(
+        numpy.array([[0.0, 0, 600, 1, 40, 3, 60000, 2, 1, 1, 50000]])))
+    new_prediction = (new_prediction > 0.5)
+    print(new_prediction)
+
+
+# evaluate the ann
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.model_selection import cross_val_score
+
+
+def train_with_kfold():
+    classifier = KerasClassifier(
+        build_fn=build_classifier, batch_size=10, epochs=100)
+    accuracies = cross_val_score(
+        estimator=classifier, X=X_train, y=y_train, cv=10, n_jobs=-1)
+    print(accuracies)
+    mean = accuracies.mean()
+    print(mean)
+    variance = accuracies.std()
+    print(variance)
+
+
+train_with_kfold()
