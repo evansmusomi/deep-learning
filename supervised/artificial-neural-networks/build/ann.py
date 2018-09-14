@@ -35,7 +35,7 @@ X_test = sc_X.transform(X_test)
 # make the ANN
 import keras
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 
 
 def build_classifier():
@@ -44,8 +44,11 @@ def build_classifier():
     # add the input layer, the hidden layers and output layer
     classifier.add(Dense(activation="relu", input_dim=11,
                          units=6, kernel_initializer="uniform"))
+    classifier.add(Dropout(p=0.1))
+
     classifier.add(Dense(activation="relu", units=6,
                          kernel_initializer="uniform"))
+    classifier.add(Dropout(p=0.1))
     classifier.add(Dense(activation="sigmoid", units=1,
                          kernel_initializer="uniform"))
     # compile the ANN
