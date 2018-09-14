@@ -35,25 +35,22 @@ X_test = sc_X.transform(X_test)
 # make the ANN
 import keras
 from keras.models import Sequential
-from keras.layers import Dense, Dropout
+from keras.layers import Dense
 
 
-def build_classifier():
+def build_classifier(optimizer="adam"):
     # construct the ANN
     classifier = Sequential()
     # add the input layer, the hidden layers and output layer
     classifier.add(Dense(activation="relu", input_dim=11,
                          units=6, kernel_initializer="uniform"))
-    classifier.add(Dropout(rate=0.1))
-
     classifier.add(Dense(activation="relu", units=6,
                          kernel_initializer="uniform"))
-    classifier.add(Dropout(rate=0.1))
     classifier.add(Dense(activation="sigmoid", units=1,
                          kernel_initializer="uniform"))
     # compile the ANN
     classifier.compile(
-        optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+        optimizer=optimizer, loss="binary_crossentropy", metrics=["accuracy"])
     return classifier
 
 
@@ -113,3 +110,20 @@ def train_with_kfold():
 
 
 train_with_kfold()
+
+# tune the ann
+from sklearn.model_selection import GridSearchCV
+
+
+def tune_the_ann():
+    classifier = KerasClassifier(build_fn=build_classifier)
+    parameters = {"batch_size": [25, 32], "epochs": [
+        100, 500], "optimizer": ["adam", "rmsprop"]}
+    grid_search = GridSearchCV(
+        classifier, param_grid=parameters, scoring="accuracy", cv=10)
+    grid_search = grid_search.fit(X_train, y_train)
+    best_parameters = grid_search.best_params_
+    print(best_parameters)
+    best_accuracy = grid_search.best_score_
+    print(best_accuracy)
+
