@@ -44,11 +44,11 @@ def build_classifier():
     # add the input layer, the hidden layers and output layer
     classifier.add(Dense(activation="relu", input_dim=11,
                          units=6, kernel_initializer="uniform"))
-    classifier.add(Dropout(p=0.1))
+    classifier.add(Dropout(rate=0.1))
 
     classifier.add(Dense(activation="relu", units=6,
                          kernel_initializer="uniform"))
-    classifier.add(Dropout(p=0.1))
+    classifier.add(Dropout(rate=0.1))
     classifier.add(Dense(activation="sigmoid", units=1,
                          kernel_initializer="uniform"))
     # compile the ANN
