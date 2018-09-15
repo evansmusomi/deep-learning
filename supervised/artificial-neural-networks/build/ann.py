@@ -60,7 +60,7 @@ from sklearn.metrics import confusion_matrix
 def train_and_predict():
     classifier = build_classifier()
     # fit the ANN to the training set
-    classifier.fit(X_train, y_train, batch_size=10, epochs=100)
+    classifier.fit(X_train, y_train, batch_size=25, epochs=500)
     # predict the test set results
     y_pred = classifier.predict(X_test)
     y_pred = (y_pred > 0.5)
@@ -99,7 +99,7 @@ from sklearn.model_selection import cross_val_score
 
 def train_with_kfold():
     classifier = KerasClassifier(
-        build_fn=build_classifier, batch_size=10, epochs=100)
+        build_fn=build_classifier, batch_size=25, epochs=500)
     accuracies = cross_val_score(
         estimator=classifier, X=X_train, y=y_train, cv=10, n_jobs=-1)
     print(accuracies)
@@ -126,4 +126,3 @@ def tune_the_ann():
     print(best_parameters)
     best_accuracy = grid_search.best_score_
     print(best_accuracy)
-
